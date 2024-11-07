@@ -1,10 +1,10 @@
-package com.jobtrackingapp.task_management;
+package com.jobtrackingapp.marketing_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TaskManagementApplicationTests {
+class MarketingServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

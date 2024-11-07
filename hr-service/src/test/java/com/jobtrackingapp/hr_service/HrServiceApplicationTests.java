@@ -1,10 +1,10 @@
-package com.jobtrackingapp.employee_management;
+package com.jobtrackingapp.hr_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class EmployeeManagementApplicationTests {
+class HrServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

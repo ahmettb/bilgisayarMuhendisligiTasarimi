@@ -1,10 +1,10 @@
-package com.jobtrackingapp.marketing_campaign;
+package com.jobtrackingapp.software_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MarketingCampaignApplicationTests {
+class SoftwareServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
