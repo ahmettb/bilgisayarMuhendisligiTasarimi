@@ -1,0 +1,35 @@
+server:
+  port: 9100
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka
+spring:
+  application:
+    name: auth-service
+  spring:
+    cloud:
+      config:
+        import-check:
+          enabled=false:
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://127.0.0.1:5432/job_tracking_db
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      ddl: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  secret: "RzGwx4V53Ye7+cL9gaY+34gsaBhxjBaS"
+  expiration: 86400
+
+
