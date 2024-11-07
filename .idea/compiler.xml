@@ -7,20 +7,22 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
-        <module name="task-management" />
-        <module name="employee-management" />
-        <module name="marketing-campaign" />
+        <module name="marketing-service" />
+        <module name="software-service" />
+        <module name="hr-service" />
         <module name="discovery" />
+        <module name="admin-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="admin-service" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
       <module name="discovery" options="-parameters" />
-      <module name="employee-management" options="-parameters" />
-      <module name="marketing-campaign" options="-parameters" />
-      <module name="task-management" options="-parameters" />
+      <module name="hr-service" options="-parameters" />
+      <module name="marketing-service" options="-parameters" />
+      <module name="software-service" options="-parameters" />
     </option>
   </component>
 </project>

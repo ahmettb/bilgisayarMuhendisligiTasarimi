@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.jobtrackingapp</groupId>
-	<artifactId>marketing-campaign</artifactId>
+	<artifactId>hr-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>marketing-campaign</name>
+	<name>employee-management</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
