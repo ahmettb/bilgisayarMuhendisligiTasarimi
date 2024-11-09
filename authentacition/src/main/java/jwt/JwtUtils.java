@@ -1,21 +1,13 @@
 package jwt;
 
-import com.cashregister.authentacition.model.ERole;
-import com.cashregister.authentacition.model.Role;
-import com.cashregister.authentacition.service.UserDetailsImpl;
+import com.jobtrackingapp.authentacition.model.Role;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
 

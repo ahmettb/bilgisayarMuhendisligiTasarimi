@@ -8,7 +8,7 @@
 		<version>3.2.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.cashregister</groupId>
+	<groupId>com.jobtrackingapp</groupId>
 	<artifactId>authentacition</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>authentacition</name>
