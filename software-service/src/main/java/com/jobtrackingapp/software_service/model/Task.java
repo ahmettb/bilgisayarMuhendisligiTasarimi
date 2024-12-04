@@ -13,7 +13,7 @@ import java.util.Date;
 @Setter
 @Entity
 @Table
-public class Task {
+public class Task extends BaseEntity {
 
 
     private String title;
