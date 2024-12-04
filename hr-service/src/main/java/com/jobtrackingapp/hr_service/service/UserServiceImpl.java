@@ -3,10 +3,12 @@ package com.jobtrackingapp.hr_service.service;
 import com.jobtrackingapp.hr_service.dto.UserDTO;
 import com.jobtrackingapp.hr_service.entity.User;
 import com.jobtrackingapp.hr_service.enums.RoleType;
+import com.jobtrackingapp.hr_service.mapper.UserMapper;
 import com.jobtrackingapp.hr_service.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService
@@ -50,7 +52,7 @@ public class UserServiceImpl implements UserService
 
     @Override
     public List<UserDTO> getUsersByRole(RoleType roletype) {
-        return userRepository.findAllByRole_Role(roleType)
+        return userRepository.findAllByRole_Role(roletype)
                 .stream()
                 .map(userMapper::toDTO)
                 .collect(Collectors.toList());
