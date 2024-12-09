@@ -13,6 +13,7 @@
         <module name="authentacition (1)" />
         <module name="api-gateway" />
         <module name="admin-service" />
+        <module name="authentacition" />
       </profile>
       <profile name="Annotation profile for hr-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
