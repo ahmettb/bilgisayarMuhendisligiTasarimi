@@ -1,5 +1,6 @@
 package com.jobtrackingapp.software_service.model.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import java.util.Date;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class TaskInfoResponse {
 
 
@@ -16,7 +18,14 @@ public class TaskInfoResponse {
     private String priority;
     private Date deadline;
     private Date createdTime;
+
+    private Long assigneerId;
     private String assigneerName;
     private String assigneerSurname;
+
+
+    private Long assigneeId;
+    private String assigneeName;
+    private String assigneeSurname;
 
 }

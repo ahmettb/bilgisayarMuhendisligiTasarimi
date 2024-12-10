@@ -1,9 +1,6 @@
 package com.jobtrackingapp.software_service.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,10 +27,17 @@ public class Task extends BaseEntity {
 
     private Date deadLine;
 
-    private String assignee;
 
-    private String assigner;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
 
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigneer_id")
+    private User assigner;
+
+
+    private boolean deleted=false;
 
 }

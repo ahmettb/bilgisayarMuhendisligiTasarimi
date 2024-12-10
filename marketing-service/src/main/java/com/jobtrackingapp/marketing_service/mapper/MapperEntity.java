@@ -15,6 +15,8 @@ public class MapperEntity {
                 .budget(campaign.getBudget()).usedBudget(campaign.getUsedBudget()).targetReach(campaign.getTargetReach())
                 .status(campaign.getStatus().name()).description(campaign.getDescription()).build();
 
+
+
     }
 
     public static List<CampaignResponse> mapToCampaignFromRequest(List<Campaign> campaign) {

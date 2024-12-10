@@ -13,6 +13,7 @@ public class CampaignResponse {
 
 
     private String name;
+
     private String description;
 
     private Date startDate;

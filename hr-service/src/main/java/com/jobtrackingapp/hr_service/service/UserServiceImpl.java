@@ -3,58 +3,53 @@ package com.jobtrackingapp.hr_service.service;
 import com.jobtrackingapp.hr_service.dto.UserDTO;
 import com.jobtrackingapp.hr_service.entity.User;
 import com.jobtrackingapp.hr_service.enums.RoleType;
-import com.jobtrackingapp.hr_service.mapper.UserMapper;
 import com.jobtrackingapp.hr_service.repository.UserRepository;
+import com.jobtrackingapp.software_service.model.Role;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService
+public class UserServiceImpl implements UserService {
 
-{
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
     }
 
     @Override
     public UserDTO addUser(UserDTO userDTO) {
-        User user = userMapper.toEntity(userDTO);
-        user = userRepository.save(user);
-        return userMapper.toDTO(user);
+return  null;
     }
 
     @Override
     public UserDTO updateUser(Long id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        userMapper.updateEntity(userDTO, user);
-        user = userRepository.save(user);
-        return userMapper.toDTO(user);
+        return  null;
+
     }
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        user.setDeleted(true);
-        userRepository.save(user);
+        return  ;
+
     }
 
     @Override
     public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        return userMapper.toDTO(user);
+        return  null;
+
     }
 
     @Override
     public List<UserDTO> getUsersByRole(RoleType roletype) {
-        return userRepository.findAllByRole_Role(roletype)
-                .stream()
-                .map(userMapper::toDTO)
-                .collect(Collectors.toList());
+        return  null;
+
+    }
+
+    private UserDTO toDTO(User user) {
+        return  null;
+
     }
 }

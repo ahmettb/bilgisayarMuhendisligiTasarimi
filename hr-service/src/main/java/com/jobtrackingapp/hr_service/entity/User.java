@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
+@Table(name = "users")
 @Entity
 @Data
 public class User {
@@ -23,7 +24,7 @@ public class User {
     private String password;
 
     @ManyToOne
-    private Role role;
+    private Role roles;
 
     private LocalDate birthDate;
 
