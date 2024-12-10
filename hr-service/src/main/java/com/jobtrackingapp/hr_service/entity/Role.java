@@ -2,10 +2,12 @@ package com.jobtrackingapp.hr_service.entity;
 
 import com.jobtrackingapp.hr_service.enums.RoleType;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Role {
 
     @Id
@@ -13,7 +15,6 @@ public class Role {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false,unique = true)
-    private RoleType roles;
-
+    @Column(nullable = false, unique = true)
+    private RoleType role;
 }

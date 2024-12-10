@@ -2,8 +2,9 @@ package com.jobtrackingapp.hr_service.service;
 
 import com.jobtrackingapp.hr_service.dto.UserDTO;
 import com.jobtrackingapp.hr_service.entity.User;
+import com.jobtrackingapp.hr_service.entity.request.UserRequest;
+import com.jobtrackingapp.hr_service.entity.response.UserResponse;
 import com.jobtrackingapp.hr_service.enums.RoleType;
-import com.jobtrackingapp.hr_service.mapper.UserMapper;
 import com.jobtrackingapp.hr_service.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,26 +16,28 @@ public class UserServiceImpl implements UserService
 
 {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
     }
 
     @Override
-    public UserDTO addUser(UserDTO userDTO) {
-        User user = userMapper.toEntity(userDTO);
-        user = userRepository.save(user);
-        return userMapper.toDTO(user);
+    public void addUser(UserRequest request) {
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setName(request.getName());
+        user.setSurname(request.getSurname());
+        user.setBirthDate(request.getBirthDate());
+        userRepository.save(user);
+
     }
 
     @Override
     public UserDTO updateUser(Long id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        userMapper.updateEntity(userDTO, user);
-        user = userRepository.save(user);
-        return userMapper.toDTO(user);
+        return null;
     }
 
     @Override
@@ -45,16 +48,19 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public UserDTO getUserById(Long id) {
+    public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        return userMapper.toDTO(user);
+        UserResponse userResponse = new UserResponse();
+        userResponse.setName(user.getName());
+        userResponse.setSurname(user.getSurname());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setPassword(user.getPassword());
+        userResponse.setBirthDate(user.getBirthDate());
+        return userResponse;
     }
 
     @Override
     public List<UserDTO> getUsersByRole(RoleType roletype) {
-        return userRepository.findAllByRole_Role(roletype)
-                .stream()
-                .map(userMapper::toDTO)
-                .collect(Collectors.toList());
+        return null;
     }
 }
