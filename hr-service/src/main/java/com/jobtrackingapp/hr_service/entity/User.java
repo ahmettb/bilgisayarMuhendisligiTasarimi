@@ -15,7 +15,6 @@ public class User {
     private Long id;
 
     private String name;
-
     private String surname;
 
     @Column(nullable = false, unique = true)
@@ -24,7 +23,11 @@ public class User {
     private String password;
 
     @ManyToOne
+<<<<<<< HEAD
     private Role roles;
+=======
+    private Role role;  // Burada Role, RoleType enum yerine Role sınıfı olabilir.
+>>>>>>> 053b6fe4d27bc1e9d0a982a3bf7200b7cd500092
 
     private LocalDate birthDate;
 

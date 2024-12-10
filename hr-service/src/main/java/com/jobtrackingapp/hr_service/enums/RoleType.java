@@ -4,5 +4,6 @@ public enum RoleType {
     SOFTWARE,
     MARKETING,
     ADMIN,
-    HUMANRESOURCE
+    HUMANRESOURCE,
+    USER
 }
