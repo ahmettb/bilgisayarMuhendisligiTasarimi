@@ -22,3 +22,8 @@ spring:
       ddl: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+
+software-service-url: http://localhost:8003/api/task
+marketing-service-url: http://localhost:8002/api/campaign
+hr-service-url: http://localhost:8001/users

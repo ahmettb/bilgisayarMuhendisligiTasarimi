@@ -1,8 +1,11 @@
 package com.jobtrackingapp.hr_service.dto;
 
+import com.jobtrackingapp.hr_service.entity.Role;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -12,6 +15,6 @@ public class UserDTO {
     private String name;
     private String surname;
     private String email;
-    private String role;  // Burada Role'ü string olarak tutabilirsiniz
-    private String birthDate;
+    private Set<Role> role;
+    private String address;
 }

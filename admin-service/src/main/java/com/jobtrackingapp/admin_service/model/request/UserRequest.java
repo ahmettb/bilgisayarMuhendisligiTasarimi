@@ -1,13 +1,9 @@
-package com.jobtrackingapp.hr_service.entity.request;
+package com.jobtrackingapp.admin_service.model.request;
 
-import com.jobtrackingapp.hr_service.enums.ERole;
-import jakarta.persistence.Column;
-import lombok.Data;
+import com.jobtrackingapp.admin_service.enums.ERole;
 import lombok.Getter;
 import lombok.Setter;
 
-
-import java.time.LocalDate;
 import java.util.Set;
 
 @Getter

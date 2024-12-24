@@ -1,4 +1,4 @@
-package com.jobtrackingapp.marketing_service.entity.response;
+package com.jobtrackingapp.admin_service.model.response;
 
 import lombok.Builder;
 import lombok.Getter;

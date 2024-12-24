@@ -13,7 +13,9 @@ public class MapperEntity {
 
         return CampaignResponse.builder().name(campaign.getName()).endDate(campaign.getEndDate()).startDate(campaign.getStartDate())
                 .budget(campaign.getBudget()).usedBudget(campaign.getUsedBudget()).targetReach(campaign.getTargetReach())
-                .status(campaign.getStatus().name()).description(campaign.getDescription()).build();
+                .status(campaign.getStatus().name()).description(campaign.getDescription())
+                .userId(campaign.getUser().getId()).userName(campaign.getUser().getUser().getName()).userSurname(campaign.getUser().getUser().getSurname())
+                .build();
 
 
 

@@ -1,9 +1,8 @@
-package com.jobtrackingapp.hr_service.entity.response;
+package com.jobtrackingapp.admin_service.model.response;
 
-import com.jobtrackingapp.hr_service.entity.Role;
+import com.jobtrackingapp.admin_service.model.Role;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 @Data

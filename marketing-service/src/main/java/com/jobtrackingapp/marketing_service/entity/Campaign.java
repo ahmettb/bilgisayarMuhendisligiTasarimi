@@ -1,10 +1,7 @@
 package com.jobtrackingapp.marketing_service.entity;
 
 import com.jobtrackingapp.marketing_service.entity.constant.CampaignStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,5 +32,8 @@ public class Campaign extends BaseEntity {
 
     private int targetReach;
 
+    @ManyToOne
+    @JoinColumn(name = "marketing_user_id", nullable = false)
+    private MarketingUser user;
 
 }

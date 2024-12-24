@@ -7,6 +7,11 @@ eureka:
     service-url:
       defaultZone: http://localhost:9000/eureka
 spring:
+  cache:
+    type:redis
+  redis:
+     host:localhost
+     port:6379
   application:
     name: marketing-service
 

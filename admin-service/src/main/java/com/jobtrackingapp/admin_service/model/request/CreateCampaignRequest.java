@@ -1,4 +1,4 @@
-package com.jobtrackingapp.marketing_service.entity.request;
+package com.jobtrackingapp.admin_service.model.request;
 
 import lombok.Getter;
 import lombok.Setter;

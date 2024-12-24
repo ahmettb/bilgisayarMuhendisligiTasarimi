@@ -4,19 +4,20 @@ server:
 spring:
   application:
     name: gateway
+  cloud:
     gateway:
       discovery:
         locator:
           enabled: true
       routes:
-        - id: admin
+        - id: admin-service
           uri: http://localhost:8000
           predicates:
             - Path=/api/admin/**
           filters:
             - name: AuthFilter
 
-        - id: marketing
+        - id: marketing-service
           uri: http://localhost:8002
           predicates:
             - Path=/api/campaign/**
@@ -51,4 +52,12 @@ eureka:
 
 
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      enabled: true
 

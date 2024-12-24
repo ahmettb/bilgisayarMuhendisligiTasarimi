@@ -1,10 +1,13 @@
 package com.jobtrackingapp.software_service.service;
 
 import com.jobtrackingapp.software_service.model.*;
+import com.jobtrackingapp.software_service.model.request.CreatePermissionRequest;
 import com.jobtrackingapp.software_service.model.request.CreateTaskRequest;
 import com.jobtrackingapp.software_service.model.request.UpdateTaskRequest;
 import com.jobtrackingapp.software_service.model.response.ApiResponse;
+import com.jobtrackingapp.software_service.model.response.PermissionResponse;
 import com.jobtrackingapp.software_service.model.response.TaskInfoResponse;
+import com.jobtrackingapp.software_service.repository.PermissionUserRepository;
 import com.jobtrackingapp.software_service.repository.SoftwareUserRepository;
 import com.jobtrackingapp.software_service.repository.TaskRepository;
 import com.jobtrackingapp.software_service.repository.UserRepository;
@@ -31,7 +34,48 @@ public class TaskService {
 
     private final SoftwareUserRepository softwareUserRepository;
 
+    private final PermissionUserRepository permissionUserRepository;
 
+
+
+    public ApiResponse<String> createPermission(CreatePermissionRequest request) {
+        PermissionUser permissionUser = new PermissionUser();
+
+        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new EntityNotFoundException("User Not Found With ID" + request.getUserId()));
+
+        permissionUser.setDayCount(request.getDayCount());
+        permissionUser.setStartDateOfPermission(request.getStartDateOfPermission());
+        permissionUser.setAccepted(false);
+        permissionUser.setUser(user);
+        permissionUserRepository.save(permissionUser);
+
+        return ApiResponse.success("Permission Request Success", null);
+
+    }
+
+    public ApiResponse<List<PermissionResponse>> getPermission(Long id)
+    {
+        List<PermissionUser> permissionUser= permissionUserRepository.findByUser_Id(id).orElseThrow(()->new EntityNotFoundException());
+
+        List<PermissionResponse> responseList=new ArrayList<>();
+        for(PermissionUser permissionUser1:permissionUser)
+        {
+            PermissionResponse permissionResponse=new PermissionResponse();
+            permissionResponse.setSurname(permissionUser1.getUser().getSurname());
+            permissionResponse.setUserName(permissionUser1.getUser().getName());
+            permissionResponse.setUserId(permissionUser1.getUser().getId());
+            permissionResponse.setStartDateOfPermission(permissionUser1.getStartDateOfPermission());
+            permissionResponse.setDayCount(permissionUser1.getDayCount());
+            permissionResponse.setAccepted(permissionUser1.getAccepted());
+            permissionResponse.setPermissionId(permissionUser1.getId());
+
+            responseList.add(permissionResponse);
+        }
+
+
+        return  ApiResponse.success("Get Permission Success",responseList);
+
+    }
 
 
     public ApiResponse<Void> createTask(CreateTaskRequest createTaskRequest) {
@@ -89,7 +133,7 @@ public class TaskService {
     public ApiResponse<Void> updateTaskStatus(UpdateTaskRequest updateTaskRequest) {
 
         try {
-            Task task = taskRepository.findById(updateTaskRequest.getTaskId()).orElseThrow(() -> new EntityNotFoundException());
+            Task task = taskRepository.findByIdAndDeletedFalse(updateTaskRequest.getTaskId()).orElseThrow(() -> new EntityNotFoundException());
             TaskStatus taskStatus = TaskStatus.valueOf(updateTaskRequest.getStatus());
             task.setStatus(taskStatus);
             taskRepository.save(task);
@@ -103,7 +147,7 @@ public class TaskService {
     }
 
     public ApiResponse<Void> deleteTask(Long taskId) {
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndDeletedFalse(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
         task.setDeleted(true);
         taskRepository.save(task);
@@ -111,7 +155,7 @@ public class TaskService {
     }
 
     public ApiResponse<Void> updateTask(Long taskId, CreateTaskRequest request) {
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndDeletedFalse(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
 
         User assignee = userRepository.findById(request.getAssigneeId())
@@ -142,7 +186,7 @@ public class TaskService {
 
         List<TaskInfoResponse>taskInfoResponseList=new ArrayList<>();
 
-        for(Task task : softwareUser.getTasksAssigned())
+        for(Task task : softwareUser.getTasksAssigned().stream().filter(task->task.isDeleted()==false).toList())
         {
             taskInfoResponseList.add(
                     new TaskInfoResponse(
@@ -169,7 +213,7 @@ public class TaskService {
 
     public ApiResponse<TaskInfoResponse> getTaskInfo(Long taskId) {
 
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndDeletedFalse(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
 
         User assignee = userRepository.findById(task.getAssignee().getId()).get();

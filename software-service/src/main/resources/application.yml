@@ -9,6 +9,9 @@ eureka:
 spring:
   application:
     name: software-service
+  config:
+    api-endpoints:
+      software-url: http://localhost:8003/api/task
 
   datasource:
     driver-class-name: org.postgresql.Driver

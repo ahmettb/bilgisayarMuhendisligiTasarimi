@@ -1,6 +1,7 @@
 package com.jobtrackingapp.marketing_service.controller;
 
 import com.jobtrackingapp.marketing_service.entity.request.CreateCampaignRequest;
+import com.jobtrackingapp.marketing_service.entity.request.CreatePermissionRequest;
 import com.jobtrackingapp.marketing_service.entity.request.UpdateCampaignRequest;
 import com.jobtrackingapp.marketing_service.entity.request.UpdateCampaignStatusRequest;
 import com.jobtrackingapp.marketing_service.entity.response.CampaignResponse;
@@ -19,6 +20,15 @@ public class CampaignController {
 
 
     private final CampaignService campaignService;
+
+
+
+    @PostMapping("add-permission")
+    public ResponseEntity<?> createPermission(@RequestBody CreatePermissionRequest request)
+    {campaignService.createPermission(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @PostMapping("save")
     private ResponseEntity<?> addCampaign(@RequestBody CreateCampaignRequest request) {

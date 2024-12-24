@@ -2,7 +2,9 @@ package com.jobtrackingapp.hr_service.controller;
 
 import com.jobtrackingapp.hr_service.dto.UserDTO;
 import com.jobtrackingapp.hr_service.entity.User;
+import com.jobtrackingapp.hr_service.entity.request.CreatePermissionRequest;
 import com.jobtrackingapp.hr_service.entity.request.UserRequest;
+import com.jobtrackingapp.hr_service.entity.response.PermissionResponse;
 import com.jobtrackingapp.hr_service.entity.response.UserResponse;
 import com.jobtrackingapp.hr_service.enums.ERole;
 import com.jobtrackingapp.hr_service.service.UserService;
@@ -26,9 +28,26 @@ public class UserController {
     }
 
     @PutMapping("update/{id}")
-    public UserDTO updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        return userService.updateUser(id, userDTO);
+    public UserDTO updateUser(@PathVariable Long id, @RequestBody UserRequest request) {
+        return userService.updateUser(id, request);
     }
+
+    @PutMapping("accept-permission/{id}")
+    public void acceptPermission(@PathVariable Long id) {
+        userService.acceptPermission(id);
+    }
+
+    @GetMapping("get-permission/{id}")
+    public List<PermissionResponse> getPermissionByUserId(@PathVariable Long id) {
+      return   userService.getPermissionByUserId(id);
+    }
+
+    @PostMapping("create-permission")
+    public void  createPermisson(@RequestBody CreatePermissionRequest request) {
+          userService.createPermission(request);
+    }
+
+
 
     @DeleteMapping("delete/{id}")
     public void deleteUser(@PathVariable Long id) {
