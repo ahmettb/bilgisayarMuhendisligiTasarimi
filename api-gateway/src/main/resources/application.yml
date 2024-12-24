@@ -1,0 +1,54 @@
+
+server:
+  port: 8500
+spring:
+  application:
+    name: gateway
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: admin
+          uri: http://localhost:8000
+          predicates:
+            - Path=/api/admin/**
+          filters:
+            - name: AuthFilter
+
+        - id: marketing
+          uri: http://localhost:8002
+          predicates:
+            - Path=/api/campaign/**
+          filters:
+            - name: AuthFilter
+
+        - id: software-service
+          uri: http://localhost:8003
+          predicates:
+            - Path=/api/task/**
+          filters:
+            - name: AuthFilter
+
+        - id: authentication
+          uri: http://localhost:9100
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - name: AuthFilter
+
+
+
+eureka:
+  instance:
+    hostname: gateway
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:9000/eureka
+
+
+
+

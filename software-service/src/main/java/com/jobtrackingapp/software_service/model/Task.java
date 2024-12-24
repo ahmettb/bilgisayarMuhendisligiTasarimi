@@ -9,12 +9,10 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table
+@Table(name = "task")
 public class Task extends BaseEntity {
 
-
     private String title;
-
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -24,20 +22,16 @@ public class Task extends BaseEntity {
     private TaskPriority priority;
 
     private Date createTime;
-
     private Date deadLine;
 
+    // Assignee ve Assigner ile SoftwareUser ilişkilendirildi
+    @ManyToOne
+    @JoinColumn(name = "assignee_id", nullable = false)
+    private SoftwareUser assignee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignee_id")
-    private User assignee;
+    @ManyToOne
+    @JoinColumn(name = "assigner_id", nullable = false)
+    private SoftwareUser assigner;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigneer_id")
-    private User assigner;
-
-
-    private boolean deleted=false;
-
+    private boolean deleted = false;
 }

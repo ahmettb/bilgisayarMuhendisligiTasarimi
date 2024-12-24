@@ -1,32 +1,40 @@
 package com.jobtrackingapp.software_service.service;
 
-import com.jobtrackingapp.software_service.model.Task;
-import com.jobtrackingapp.software_service.model.TaskPriority;
-import com.jobtrackingapp.software_service.model.TaskStatus;
-import com.jobtrackingapp.software_service.model.User;
+import com.jobtrackingapp.software_service.model.*;
 import com.jobtrackingapp.software_service.model.request.CreateTaskRequest;
 import com.jobtrackingapp.software_service.model.request.UpdateTaskRequest;
 import com.jobtrackingapp.software_service.model.response.ApiResponse;
 import com.jobtrackingapp.software_service.model.response.TaskInfoResponse;
+import com.jobtrackingapp.software_service.repository.SoftwareUserRepository;
 import com.jobtrackingapp.software_service.repository.TaskRepository;
 import com.jobtrackingapp.software_service.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class TaskService {
-
 
     private final TaskRepository taskRepository;
 
     private final UserRepository userRepository;
 
-    public ApiResponse<Void> createTask(CreateTaskRequest createTaskRequest) {
+    private final SoftwareUserRepository softwareUserRepository;
 
+
+
+
+    public ApiResponse<Void> createTask(CreateTaskRequest createTaskRequest) {
         try {
             User assignee = userRepository.findById(createTaskRequest.getAssigneeId()).orElseThrow(() -> new EntityNotFoundException());
             User assigneer = userRepository.findById(createTaskRequest.getAssigneerId()).orElseThrow(() -> new EntityNotFoundException());
@@ -40,18 +48,43 @@ public class TaskService {
             task.setDescription(createTaskRequest.getDescription());
             task.setTitle(createTaskRequest.getTitle());
             task.setDeadLine(createTaskRequest.getDeadLine());
-            task.setAssignee(assignee);
-            task.setAssigner(assigneer);
 
+            // Assigner SoftwareUser'ı bul veya yeni oluştur
+            SoftwareUser assignerSoftware = softwareUserRepository.findSoftwareUserByUserId(createTaskRequest.getAssigneerId())
+                    .orElseGet(() -> {
+                        SoftwareUser newAssignerSoftware = new SoftwareUser();
+                        newAssignerSoftware.setUser(assigneer); // Assigneer kullanıcıyı ata
+                        return softwareUserRepository.save(newAssignerSoftware); // Yeni SoftwareUser'ı kaydet
+                    });
+
+            // Assignee SoftwareUser'ı bul veya yeni oluştur
+            SoftwareUser assigneSoftware = softwareUserRepository.findSoftwareUserByUserId(createTaskRequest.getAssigneeId())
+                    .orElseGet(() -> {
+                        SoftwareUser newAssigneSoftware = new SoftwareUser();
+                        newAssigneSoftware.setUser(assignee); // Assignee kullanıcıyı ata
+                        // Yeni bir task listesi oluşturup görevi ekle
+                        List<Task> taskList = new ArrayList<>();
+                        taskList.add(task); // Task'ı listeye ekle
+                      //  newAssigneSoftware.setTasksAssigned(taskList); // SoftwareUser'a görevleri ata
+
+                        return softwareUserRepository.save(newAssigneSoftware); // Yeni SoftwareUser'ı kaydet
+                    });
+
+            // Task'ı SoftwareUser'lara ata
+           // assignerSoftware.getTasksAssignedByMe().add(task);
+           // assigneSoftware.getTasksAssigned().add(task);
+            task.setAssignee(assigneSoftware);
+            task.setAssigner(assignerSoftware);
+
+            // Task'ı kaydet
             taskRepository.save(task);
+
             return ApiResponse.success("Task Created", null);
         } catch (Exception exception) {
             return ApiResponse.error(exception.getMessage());
-
         }
-
-
     }
+
 
     public ApiResponse<Void> updateTaskStatus(UpdateTaskRequest updateTaskRequest) {
 
@@ -95,11 +128,43 @@ public class TaskService {
         task.setDescription(request.getDescription());
         task.setTitle(request.getTitle());
         task.setDeadLine(request.getDeadLine());
-        task.setAssignee(assignee);
-        task.setAssigner(assigner);
+        // task.setAssignee(assignee);
+        // task.setAssigner(assigner);
 
         taskRepository.save(task);
         return ApiResponse.success("Task updated successfully", null);
+    }
+    public ApiResponse<List<TaskInfoResponse>>getTaskInfoListBuSoftwareUserId(Long id)
+    {
+
+      SoftwareUser softwareUser = softwareUserRepository.findSoftwareUserByUserId(id).orElseThrow(()->new EntityNotFoundException("Software User Not Found with ID"+id));
+
+
+        List<TaskInfoResponse>taskInfoResponseList=new ArrayList<>();
+
+        for(Task task : softwareUser.getTasksAssigned())
+        {
+            taskInfoResponseList.add(
+                    new TaskInfoResponse(
+                            task.getTitle(),
+                            task.getDescription(),
+                            task.getStatus().name(),
+                            task.getPriority().name(),
+                            task.getDeadLine(),
+                            task.getCreateTime(),
+                            softwareUser.getUser().getId(),
+                            softwareUser.getUser().getName(),
+                            softwareUser.getUser().getSurname(),
+                            softwareUser.getUser().getId(),
+                            softwareUser.getUser().getName(),
+                            softwareUser.getUser().getSurname()
+
+            ));
+
+        }
+        return ApiResponse.success("Get Task By Software User ID Success",taskInfoResponseList);
+
+
     }
 
     public ApiResponse<TaskInfoResponse> getTaskInfo(Long taskId) {

@@ -2,34 +2,38 @@ package com.jobtrackingapp.hr_service.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
-@Table(name = "users")
 @Entity
-@Data
+@Getter
+@Setter
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
-    private String name;
+
+    private  String name;
+
+
+    private String username;
     private String surname;
+    private String address;
 
-    @Column(nullable = false, unique = true)
     private String email;
 
-    private String password;
+    private  String password;
+    private boolean deleted=false;
 
-    @ManyToOne
-<<<<<<< HEAD
-    private Role roles;
-=======
-    private Role role;  // Burada Role, RoleType enum yerine Role sınıfı olabilir.
->>>>>>> 053b6fe4d27bc1e9d0a982a3bf7200b7cd500092
 
-    private LocalDate birthDate;
-
-    private boolean isDeleted = false; // Soft delete için
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 }

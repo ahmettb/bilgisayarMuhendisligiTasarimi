@@ -1,9 +1,10 @@
 package com.jobtrackingapp.hr_service.controller;
 
 import com.jobtrackingapp.hr_service.dto.UserDTO;
+import com.jobtrackingapp.hr_service.entity.User;
 import com.jobtrackingapp.hr_service.entity.request.UserRequest;
 import com.jobtrackingapp.hr_service.entity.response.UserResponse;
-import com.jobtrackingapp.hr_service.enums.RoleType;
+import com.jobtrackingapp.hr_service.enums.ERole;
 import com.jobtrackingapp.hr_service.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +40,14 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+    @GetMapping("get-user-entity/{id}")
+    public User getUserEntityById(@PathVariable("id")Long id)
+    {
+            return  userService.getUserEntity(id);
+    }
+
     @GetMapping("/role/{role}")
-    public List<UserDTO> getUsersByRole(@PathVariable RoleType role) {
+    public List<UserDTO> getUsersByRole(@PathVariable ERole role) {
         return userService.getUsersByRole(role);
     }
 }

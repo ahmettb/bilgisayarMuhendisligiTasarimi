@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/task/")
 @AllArgsConstructor
@@ -42,6 +44,15 @@ public class TaskController {
         return new ResponseEntity<>(taskService.getTaskInfo(id), HttpStatus.OK);
 
     }
+    @GetMapping("get-by-software-id/{id}")
+    public ResponseEntity<ApiResponse<List<TaskInfoResponse>>> getTaskInfoListBuSoftwareUserId(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(taskService.getTaskInfoListBuSoftwareUserId(id), HttpStatus.OK);
+
+    }
+
+
+
+
 
     @PutMapping("update/{id}")
     public ResponseEntity<ApiResponse<Void>> updateTaskStatus(@RequestBody CreateTaskRequest request, @PathVariable("id") Long id) {
