@@ -22,10 +22,10 @@ public class Routes {
         marketingUrl.add("/api/campaign/update");
         marketingUrl.add("/api/campaign/update-status");
         marketingUrl.add("/api/campaign/save");
-        marketingUrl.add("api/campaign/save");
         marketingUrl.add("api/campaign/get");
         marketingUrl.add("api/campaign/get-all");
         marketingUrl.add("api/campaign/delete");
+        marketingUrl.add("/api/campaign/add-permission");
 
 
         softwareUrl.add("/api/task/update");
@@ -33,9 +33,23 @@ public class Routes {
         softwareUrl.add("/api/task/create");
         softwareUrl.add("/api/task/get");
         softwareUrl.add("/api/task/delete");
+        softwareUrl.add("/api/task/get-by-software-id");
+        softwareUrl.add("/api/task/add-permission");
+        softwareUrl.add("/api/task/get-permission");
 
-       //humanServiceUrl.add("/api/report");
-      //  softwareUrl.add("/api/user-management");
+        humanServiceUrl.add("/api/user/save");
+        humanServiceUrl.add("/api/user/update");
+        humanServiceUrl.add("/api/user/accept-permission");
+        humanServiceUrl.add("/api/user/get-permission");
+        humanServiceUrl.add("/api/user/create-permission");
+        humanServiceUrl.add("/api/user/delete");
+        humanServiceUrl.add("/api/user/get");
+        humanServiceUrl.add("/api/user/get-user-entity");
+        humanServiceUrl.add("/api/user/role");
+
+
+        //humanServiceUrl.add("/api/report");
+        //  softwareUrl.add("/api/user-management");
         roleEndpoints.put("MARKETING", marketingUrl);
         roleEndpoints.put("SOFTWARE", softwareUrl);
         roleEndpoints.put("HUMAN_RESOURCE", humanServiceUrl);
@@ -46,4 +60,3 @@ public class Routes {
 
     }
 }
-

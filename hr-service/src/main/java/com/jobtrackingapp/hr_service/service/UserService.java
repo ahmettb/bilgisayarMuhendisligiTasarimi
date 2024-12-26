@@ -4,6 +4,7 @@ import com.jobtrackingapp.hr_service.dto.UserDTO;
 import com.jobtrackingapp.hr_service.entity.User;
 import com.jobtrackingapp.hr_service.entity.request.CreatePermissionRequest;
 import com.jobtrackingapp.hr_service.entity.request.UserRequest;
+import com.jobtrackingapp.hr_service.entity.response.ApiResponse;
 import com.jobtrackingapp.hr_service.entity.response.PermissionResponse;
 import com.jobtrackingapp.hr_service.entity.response.UserResponse;
 import com.jobtrackingapp.hr_service.enums.ERole;
@@ -13,13 +14,13 @@ import com.jobtrackingapp.hr_service.enums.ERole;
 import java.util.List;
 
 public interface UserService {
-    void addUser(UserRequest request);
-    User getUserEntity(Long id);
-    UserDTO updateUser(Long id,UserRequest userRequest);
-    void deleteUser(Long id);
-    UserResponse getUserById(Long id);
-    List<UserDTO> getUsersByRole(ERole roletype);
-    void acceptPermission(Long id);
-    List<PermissionResponse> getPermissionByUserId(Long id);
-    void createPermission(CreatePermissionRequest request);
+    ApiResponse<Void> addUser(UserRequest request);
+    ApiResponse<User>  getUserEntity(Long id);
+    ApiResponse<UserDTO> updateUser(Long id,UserRequest userRequest);
+    ApiResponse<Void> deleteUser(Long id);
+    ApiResponse<UserResponse> getUserById(Long id);
+    ApiResponse<List<UserDTO>> getUsersByRole(ERole roletype);
+    ApiResponse<Void> acceptPermission(Long id);
+    ApiResponse<List<PermissionResponse>> getPermissionByUserId(Long id);
+    ApiResponse<Void> createPermission(CreatePermissionRequest request);
 }

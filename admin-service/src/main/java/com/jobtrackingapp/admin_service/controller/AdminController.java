@@ -24,44 +24,69 @@ public class AdminController {
     private final MarketingServiceClient marketingServiceClient;
     private final HumanResourceClient humanResourceClient;
 
-
+    // Get software task info by ID
     @GetMapping("/software/task/{id}")
     public ResponseEntity<ApiResponse<TaskInfoResponse>> getSoftwareTask(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(softwareServiceClient.getTaskInfo(id));
+        ApiResponse<TaskInfoResponse> response = softwareServiceClient.getTaskInfo(id);
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
+    // Get all marketing campaigns
     @GetMapping("/marketing/get-all-campaign/")
-    public ResponseEntity<List<CampaignResponse>> getCampaignResponseList() {
-        return ResponseEntity.ok(marketingServiceClient.getCampaignResponseList());
+    public ResponseEntity<ApiResponse<List<CampaignResponse>>> getCampaignResponseList() {
+        ApiResponse<List<CampaignResponse>> response = marketingServiceClient.getCampaignResponseList();
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
-
+    // Get specific campaign by ID
     @GetMapping("/marketing/get-campaign/{id}")
-    public ResponseEntity<CampaignResponse> getCampaignResponse(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(marketingServiceClient.getCampaignResponse(id));
+    public ResponseEntity<ApiResponse<CampaignResponse>> getCampaignResponse(@PathVariable("id") Long id) {
+        ApiResponse<CampaignResponse> response = marketingServiceClient.getCampaignResponse(id);
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
-
+    // Add a new marketing campaign
     @PostMapping("/marketing/save-campaign/")
-    public ResponseEntity<?> addCampaign(@RequestBody CreateCampaignRequest request) {
-        marketingServiceClient.addCampaign(request);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<ApiResponse<Void>> addCampaign(@RequestBody CreateCampaignRequest request) {
+        ApiResponse<Void> response = marketingServiceClient.addCampaign(request);
+        if (response.isSuccess()) {
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
+    // Add a new user to HR
     @PostMapping("/hr/add-user")
-    public ResponseEntity<?> addUser(@RequestBody UserRequest request)  {
-        humanResourceClient.addUser(request);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<ApiResponse<Void>> addUser(@RequestBody UserRequest request) {
+        ApiResponse<Void> response = humanResourceClient.addUser(request);
+        if (response.isSuccess()) {
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-
-    @GetMapping("/hr/get-user")
-    public ResponseEntity<?> getUserById(@PathVariable("id")Long id)  {
-        humanResourceClient.getUserById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    // Get user info by ID
+    @GetMapping("/hr/get-user/{id}")
+    public ResponseEntity<ApiResponse<?>> getUserById(@PathVariable("id") Long id) {
+        ApiResponse<?> response = humanResourceClient.getUserById(id);
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
-
-
-
-
 }

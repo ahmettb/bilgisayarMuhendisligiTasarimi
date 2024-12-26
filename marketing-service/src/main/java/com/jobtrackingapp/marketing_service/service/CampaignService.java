@@ -9,6 +9,7 @@ import com.jobtrackingapp.marketing_service.entity.request.CreateCampaignRequest
 import com.jobtrackingapp.marketing_service.entity.request.CreatePermissionRequest;
 import com.jobtrackingapp.marketing_service.entity.request.UpdateCampaignRequest;
 import com.jobtrackingapp.marketing_service.entity.request.UpdateCampaignStatusRequest;
+import com.jobtrackingapp.marketing_service.entity.response.ApiResponse;
 import com.jobtrackingapp.marketing_service.entity.response.CampaignResponse;
 import com.jobtrackingapp.marketing_service.entity.response.PermissionResponse;
 import com.jobtrackingapp.marketing_service.exception.CampaignNotFoundException;
@@ -34,134 +35,172 @@ public class CampaignService {
 
     private final UserRepository userRepository;
 
-    private  final MarketingUserRepository marketingUserRepository;
+    private final MarketingUserRepository marketingUserRepository;
 
-    private  final PermissionUserRepository permissionUserRepository;
+    private final PermissionUserRepository permissionUserRepository;
 
-    public void createPermission(CreatePermissionRequest request) {
-        PermissionUser permissionUser = new PermissionUser();
+    public ApiResponse<Void> createPermission(CreatePermissionRequest request) {
+        try {
+            PermissionUser permissionUser = new PermissionUser();
 
-        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new EntityNotFoundException("User Not Found With ID" + request.getUserId()));
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("User Not Found With ID" + request.getUserId()));
 
-        permissionUser.setDayCount(request.getDayCount());
-        permissionUser.setStartDateOfPermission(request.getStartDateOfPermission());
-        permissionUser.setAccepted(false);
-        permissionUser.setUser(user);
-        permissionUserRepository.save(permissionUser);
+            permissionUser.setDayCount(request.getDayCount());
+            permissionUser.setStartDateOfPermission(request.getStartDateOfPermission());
+            permissionUser.setAccepted(false);
+            permissionUser.setUser(user);
+            permissionUserRepository.save(permissionUser);
 
-
-    }
-
-    public List<PermissionResponse> getPermission(Long id)
-    {
-        List<PermissionUser> permissionUser= permissionUserRepository.findByUser_Id(id).orElseThrow(()->new EntityNotFoundException());
-
-        List<PermissionResponse> responseList=new ArrayList<>();
-        for(PermissionUser permissionUser1:permissionUser)
-        {
-            PermissionResponse permissionResponse=new PermissionResponse();
-            permissionResponse.setSurname(permissionUser1.getUser().getSurname());
-            permissionResponse.setUserName(permissionUser1.getUser().getName());
-            permissionResponse.setUserId(permissionUser1.getUser().getId());
-            permissionResponse.setStartDateOfPermission(permissionUser1.getStartDateOfPermission());
-            permissionResponse.setDayCount(permissionUser1.getDayCount());
-            permissionResponse.setAccepted(permissionUser1.getAccepted());
-            permissionResponse.setPermissionId(permissionUser1.getId());
-
-            responseList.add(permissionResponse);
+            return ApiResponse.success("Permission Request Created Successfully", null);
+        } catch (EntityNotFoundException e) {
+            return ApiResponse.error("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ApiResponse.error("Error creating permission: " + e.getMessage());
         }
-
-
-        return responseList;
-
     }
 
+    public ApiResponse<List<PermissionResponse>> getPermission(Long id) {
+        try {
+            List<PermissionUser> permissionUser = permissionUserRepository.findByUser_Id(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Permissions not found for User ID: " + id));
+
+            List<PermissionResponse> responseList = new ArrayList<>();
+            for (PermissionUser permissionUser1 : permissionUser) {
+                PermissionResponse permissionResponse = new PermissionResponse();
+                permissionResponse.setSurname(permissionUser1.getUser().getSurname());
+                permissionResponse.setUserName(permissionUser1.getUser().getName());
+                permissionResponse.setUserId(permissionUser1.getUser().getId());
+                permissionResponse.setStartDateOfPermission(permissionUser1.getStartDateOfPermission());
+                permissionResponse.setDayCount(permissionUser1.getDayCount());
+                permissionResponse.setAccepted(permissionUser1.getAccepted());
+                permissionResponse.setPermissionId(permissionUser1.getId());
+
+                responseList.add(permissionResponse);
+            }
+
+            return ApiResponse.success("Permission List Retrieved Successfully", responseList);
+        } catch (EntityNotFoundException e) {
+            return ApiResponse.error("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ApiResponse.error("Error retrieving permissions: " + e.getMessage());
+        }
+    }
 
     @Transactional
-    public void saveCampaign(CreateCampaignRequest request) {
+    public ApiResponse<Void> saveCampaign(CreateCampaignRequest request) {
+        try {
+            User user = userRepository.findById(request.getCreatedUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("Marketing User Not Found With ID" + request.getCreatedUserId()));
 
-     User user=userRepository.findById(request.getCreatedUserId()).orElseThrow(()->new EntityNotFoundException("Marketing User Not Found With ID" + request.getCreatedUserId()));
+            Campaign campaign = new Campaign();
+            campaign.setName(request.getName());
+            campaign.setStatus(CampaignStatus.ACTIVE);
+            campaign.setDescription(request.getDescription());
+            campaign.setBudget(request.getBudget());
+            campaign.setTargetReach(request.getTargetReach());
+            campaign.setStartDate(request.getStartDate());
+            campaign.setEndDate(request.getEndDate());
 
+            MarketingUser marketingUser = marketingUserRepository.findMarketingUserByUserId(request.getCreatedUserId())
+                    .orElseGet(() -> {
+                        MarketingUser newMarketingUser = new MarketingUser();
+                        newMarketingUser.setUser(user);
+                        return marketingUserRepository.save(newMarketingUser);
+                    });
 
-        Campaign campaign = new Campaign();
+            campaign.setUser(marketingUser);
+            campaignRepository.save(campaign);
 
-
-        campaign.setName(request.getName());
-        campaign.setStatus(CampaignStatus.ACTIVE);
-        campaign.setDescription(request.getDescription());
-        campaign.setBudget(request.getBudget());
-        campaign.setTargetReach(request.getTargetReach());
-        campaign.setStartDate(request.getStartDate());
-        campaign.setEndDate(request.getEndDate());
-
-
-        MarketingUser marketingUser = marketingUserRepository.findMarketingUserByUserId(request.getCreatedUserId())
-                .orElseGet(() -> {
-                    MarketingUser newMarketingUser = new MarketingUser();
-
-                    newMarketingUser.setUser(user);
-
-                    return marketingUserRepository.save(newMarketingUser);
-                });
-
-
-        campaign.setUser(marketingUser);
-        campaignRepository.save(campaign);
-
+            return ApiResponse.success("Campaign Created Successfully", null);
+        } catch (EntityNotFoundException e) {
+            return ApiResponse.error("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ApiResponse.error("Error creating campaign: " + e.getMessage());
+        }
     }
 
-    @Cacheable(value = "campaigns",key = "#id")
-    public CampaignResponse getCampaignById(long id) {
+    @Cacheable(value = "campaigns", key = "#id")
+    public ApiResponse<CampaignResponse> getCampaignById(long id) {
+        try {
+            Campaign campaign = campaignRepository.findByIdAndDeletedFalse(id)
+                    .orElseThrow(() -> new CampaignNotFoundException("Campaign Not Found"));
 
-        Campaign campaign = campaignRepository.findByIdAndDeletedFalse(id).orElseThrow(
-                () -> new CampaignNotFoundException("Campaign Not Found")
-        );
-        CampaignResponse campaignResponse = MapperEntity.mapToCampaignFromRequest(campaign);
-        return campaignResponse;
-
+            CampaignResponse campaignResponse = MapperEntity.mapToCampaignFromRequest(campaign);
+            return ApiResponse.success("Campaign Retrieved Successfully", campaignResponse);
+        } catch (CampaignNotFoundException e) {
+            return ApiResponse.error("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ApiResponse.error("Error retrieving campaign: " + e.getMessage());
+        }
     }
 
-    public List<CampaignResponse> getAllCampaign() {
-
-        List<Campaign> campaignList = campaignRepository.findAll();
-        List<CampaignResponse> campaignResponse = MapperEntity.mapToCampaignFromRequest(campaignList);
-        return campaignResponse;
+    public ApiResponse<List<CampaignResponse>> getAllCampaign() {
+        try {
+            List<Campaign> campaignList = campaignRepository.findAll();
+            List<CampaignResponse> campaignResponse = MapperEntity.mapToCampaignFromRequest(campaignList);
+            return ApiResponse.success("All Campaigns Retrieved Successfully", campaignResponse);
+        } catch (Exception e) {
+            return ApiResponse.error("Error retrieving campaigns: " + e.getMessage());
+        }
     }
 
-    public void deleteCampaignById(long id) {
-        Campaign campaign = campaignRepository.findByIdAndDeletedFalse(id).orElseThrow(
-                () -> new CampaignNotFoundException("Campaign Not Found")
-        );
-        campaign.setDeleted(true);
-        campaignRepository.save(campaign);
+    public ApiResponse<Void> deleteCampaignById(long id) {
+        try {
+            Campaign campaign = campaignRepository.findByIdAndDeletedFalse(id)
+                    .orElseThrow(() -> new CampaignNotFoundException("Campaign Not Found"));
 
+            campaign.setDeleted(true);
+            campaignRepository.save(campaign);
+
+            return ApiResponse.success("Campaign Deleted Successfully", null);
+        } catch (CampaignNotFoundException e) {
+            return ApiResponse.error("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ApiResponse.error("Error deleting campaign: " + e.getMessage());
+        }
     }
 
-    public void updateCampaign(UpdateCampaignRequest request) {
-        Campaign campaign = campaignRepository.findByIdAndDeletedFalse(request.getId()).orElseThrow(
-                () -> new CampaignNotFoundException("Campaign Not Found")
-        );
+    public ApiResponse<Void> updateCampaign(UpdateCampaignRequest request) {
+        try {
+            Campaign campaign = campaignRepository.findByIdAndDeletedFalse(request.getId())
+                    .orElseThrow(() -> new CampaignNotFoundException("Campaign Not Found"));
 
-        campaign.setUsedBudget(request.getUsedBudget());
-        campaign.setTargetReach(request.getTargetReach());
-        campaign.setName(request.getName());
-        campaign.setDescription(request.getDescription());
-        campaign.setStartDate(request.getStartDate());
-        campaign.setEndDate(request.getEndDate());
-        campaign.setBudget(request.getBudget());
-        CampaignStatus campaignStatus = CampaignStatus.fromFormattedString(request.getStatus());
-        campaign.setStatus(campaignStatus);
-        campaignRepository.save(campaign);
+            campaign.setUsedBudget(request.getUsedBudget());
+            campaign.setTargetReach(request.getTargetReach());
+            campaign.setName(request.getName());
+            campaign.setDescription(request.getDescription());
+            campaign.setStartDate(request.getStartDate());
+            campaign.setEndDate(request.getEndDate());
+            campaign.setBudget(request.getBudget());
+            CampaignStatus campaignStatus = CampaignStatus.fromFormattedString(request.getStatus());
+            campaign.setStatus(campaignStatus);
+
+            campaignRepository.save(campaign);
+
+            return ApiResponse.success("Campaign Updated Successfully", null);
+        } catch (CampaignNotFoundException e) {
+            return ApiResponse.error("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ApiResponse.error("Error updating campaign: " + e.getMessage());
+        }
     }
 
-    public void updateCampaignStatus(UpdateCampaignStatusRequest request) {
-        Campaign campaign = campaignRepository.findByIdAndDeletedFalse(request.getId()).orElseThrow(
-                () -> new CampaignNotFoundException("Campaign Not Found")
-        );
-        CampaignStatus campaignStatus = CampaignStatus.fromFormattedString(request.getStatus());
-        campaign.setStatus(campaignStatus);
-        campaignRepository.save(campaign);
+    public ApiResponse<Void> updateCampaignStatus(UpdateCampaignStatusRequest request) {
+        try {
+            Campaign campaign = campaignRepository.findByIdAndDeletedFalse(request.getId())
+                    .orElseThrow(() -> new CampaignNotFoundException("Campaign Not Found"));
+
+            CampaignStatus campaignStatus = CampaignStatus.fromFormattedString(request.getStatus());
+            campaign.setStatus(campaignStatus);
+
+            campaignRepository.save(campaign);
+
+            return ApiResponse.success("Campaign Status Updated Successfully", null);
+        } catch (CampaignNotFoundException e) {
+            return ApiResponse.error("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ApiResponse.error("Error updating campaign status: " + e.getMessage());
+        }
     }
-
-
 }
