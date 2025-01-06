@@ -10,15 +10,19 @@ import java.util.function.Predicate;
 public class ValidatorRoute {
 
 
-List<String> openApiEndpoints=List.of(
-        "api/auth/login",
-        "api/auth/register",
-        "api/auth/validate"
-);
+    List<String> openApiEndpoints = List.of(
+            "api/auth/login",
+            "api/auth/register",
+            "api/auth/validate",
+            "api/auth/get-user-info",
+            "api/auth/get-current-user"
 
-public Predicate <ServerHttpRequest>isSecureEndpoint = serverHttpRequest ->
 
-    openApiEndpoints.stream().noneMatch(uri->serverHttpRequest.getURI().getPath().contains(uri));
+    );
+
+    public Predicate<ServerHttpRequest> isSecureEndpoint = serverHttpRequest ->
+
+            openApiEndpoints.stream().noneMatch(uri -> serverHttpRequest.getURI().getPath().contains(uri));
 
 
 }

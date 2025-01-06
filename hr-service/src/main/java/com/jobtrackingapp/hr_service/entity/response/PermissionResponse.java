@@ -8,7 +8,11 @@ import java.util.Date;
 public class PermissionResponse {
 
     private Long permissionId;
-    UserResponse userResponse;
+
+    private String userName;
+
+    private String  surname;
+    private Long userId;
 
     private Integer dayCount;
 

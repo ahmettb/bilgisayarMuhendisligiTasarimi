@@ -7,7 +7,7 @@ import java.util.Date;
 @Data
 public class CreatePermissionRequest {
 
-    private Long userId;  // Kullanıcı ID'si, User nesnesi yerine ID gönderilir
+    private Long userId;
     private Integer dayCount;
     private Boolean accepted = false;
     private Date startDateOfPermission;

@@ -24,6 +24,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 
-software-service-url: http://localhost:8003/api/task
-marketing-service-url: http://localhost:8002/api/campaign
-hr-service-url: http://localhost:8001/users
+software-service-url: http://localhost:8500/api/task
+marketing-service-url: http://localhost:8500/api/campaign
+hr-service-url: http://localhost:8500/api/user
+auth-service-url: http://localhost:8500/api/auth

@@ -1,30 +1,23 @@
 package com.jobtrackingapp.marketing_service.entity.constant;
 
 public enum CampaignStatus {
+    ACTIVE,
+    INACTIVE,
+    PENDING,
+    COMPLETED;  // Yeni eklenen durum
 
-    ACTIVE("Active"),
-    COMPLETED("Completed"),
-    CANCELED("Canceled");
-
-    private final String formattedString;
-
-    CampaignStatus(String formattedString) {
-        this.formattedString = formattedString;
-    }
-
-    public String getFormattedString() {
-        return formattedString;
-    }
-
-
-
-    public static CampaignStatus fromFormattedString(String formattedString) {
-        for (CampaignStatus type : values()) {
-            if (type.getFormattedString().equalsIgnoreCase(formattedString)) {
-                return type;
-            }
+    public static CampaignStatus fromFormattedString(String status) {
+        switch (status.toUpperCase()) {
+            case "ACTIVE":
+                return ACTIVE;
+            case "INACTIVE":
+                return INACTIVE;
+            case "PENDING":
+                return PENDING;
+            case "COMPLETED":  // Yeni durum için case ekleme
+                return COMPLETED;
+            default:
+                throw new IllegalArgumentException("Invalid status: " + status);
         }
-        throw new IllegalArgumentException("Geçersiz cevap tipi: " + formattedString);
     }
-
 }

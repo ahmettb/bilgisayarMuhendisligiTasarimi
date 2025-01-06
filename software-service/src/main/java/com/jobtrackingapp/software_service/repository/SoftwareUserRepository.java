@@ -11,3 +11,5 @@ public interface SoftwareUserRepository extends JpaRepository<SoftwareUser,Long>
 
     @Query("SELECT su FROM SoftwareUser su WHERE su.user.id = :userId")
     Optional<SoftwareUser> findSoftwareUserByUserId(@Param("userId") Long userId);}
+
+

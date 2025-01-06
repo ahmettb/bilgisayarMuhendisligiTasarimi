@@ -21,7 +21,7 @@ public class GlobalException {
     @ExceptionHandler({SessionExpired.class})
     public ResponseEntity<ExceptionMessage> sessionExpired(SessionExpired e, HttpServletRequest request) {
 
-      //  log.info("SessionExpired handler");
+     log.info("SessionExpired handler");
         String path = request.getRequestURI();
 
         ExceptionMessage exceptionMessage = new ExceptionMessage(

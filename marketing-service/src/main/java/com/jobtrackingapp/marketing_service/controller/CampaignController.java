@@ -21,23 +21,15 @@ public class CampaignController {
 
     private final CampaignService campaignService;
 
-    @PostMapping("add-permission")
-    public ResponseEntity<ApiResponse<Void>> createPermission(@RequestBody CreatePermissionRequest request) {
-        ApiResponse<Void> response = campaignService.createPermission(request);
-        if (response.isSuccess()) {
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
+
 
     @PostMapping("save")
     private ResponseEntity<ApiResponse<Void>> addCampaign(@RequestBody CreateCampaignRequest request) {
         ApiResponse<Void> response = campaignService.saveCampaign(request);
         if (response.isSuccess()) {
-            return new ResponseEntity<>(response, HttpStatus.CREATED); // 201 Created status
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); // 400 Bad Request for errors
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -47,7 +39,7 @@ public class CampaignController {
         if (response.isSuccess()) {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND); // 404 Not Found
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -57,17 +49,24 @@ public class CampaignController {
         if (response.isSuccess()) {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); // 400 Bad Request for any error
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PutMapping("update")
-    private ResponseEntity<ApiResponse<Void>> updateCampaign(@RequestBody UpdateCampaignRequest request) {
-        ApiResponse<Void> response = campaignService.updateCampaign(request);
+    @PostMapping
+    private ResponseEntity<?>updateCampaignStatusBatch()
+    {
+        campaignService.updateCampaignStatuses();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("update/{id}")
+    private ResponseEntity<ApiResponse<Void>> updateCampaign(@PathVariable("id")Long id,@RequestBody UpdateCampaignRequest request) {
+        ApiResponse<Void> response = campaignService.updateCampaign(id,request);
         if (response.isSuccess()) {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); // 400 Bad Request
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -77,7 +76,7 @@ public class CampaignController {
         if (response.isSuccess()) {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); // 400 Bad Request
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -87,7 +86,7 @@ public class CampaignController {
         if (response.isSuccess()) {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND); // 404 Not Found
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 }

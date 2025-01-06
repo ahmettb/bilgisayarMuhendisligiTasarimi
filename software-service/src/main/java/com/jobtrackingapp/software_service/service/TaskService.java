@@ -4,9 +4,7 @@ import com.jobtrackingapp.software_service.model.*;
 import com.jobtrackingapp.software_service.model.request.CreatePermissionRequest;
 import com.jobtrackingapp.software_service.model.request.CreateTaskRequest;
 import com.jobtrackingapp.software_service.model.request.UpdateTaskRequest;
-import com.jobtrackingapp.software_service.model.response.ApiResponse;
-import com.jobtrackingapp.software_service.model.response.PermissionResponse;
-import com.jobtrackingapp.software_service.model.response.TaskInfoResponse;
+import com.jobtrackingapp.software_service.model.response.*;
 import com.jobtrackingapp.software_service.repository.PermissionUserRepository;
 import com.jobtrackingapp.software_service.repository.SoftwareUserRepository;
 import com.jobtrackingapp.software_service.repository.TaskRepository;
@@ -14,6 +12,9 @@ import com.jobtrackingapp.software_service.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -33,54 +35,147 @@ public class TaskService {
     private final SoftwareUserRepository softwareUserRepository;
     private final PermissionUserRepository permissionUserRepository;
 
-    public ApiResponse<String> createPermission(CreatePermissionRequest request) {
-        try {
-            PermissionUser permissionUser = new PermissionUser();
-            User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new EntityNotFoundException("User Not Found With ID" + request.getUserId()));
 
-            permissionUser.setDayCount(request.getDayCount());
-            permissionUser.setStartDateOfPermission(request.getStartDateOfPermission());
-            permissionUser.setAccepted(false);
-            permissionUser.setUser(user);
-            permissionUserRepository.save(permissionUser);
 
-            return ApiResponse.success("Permission Request Success", null);
-        } catch (EntityNotFoundException ex) {
-            return ApiResponse.error("User not found: " + ex.getMessage());
-        } catch (Exception ex) {
-            return ApiResponse.error("Error while creating permission: " + ex.getMessage());
+
+    public ApiResponse<UserTaskCompletionRateAnalysis> getUserTaskCompletionRateAnalysis(Long userId) {
+        List<Task> tasks = taskRepository.findAll().stream()
+                .filter(t -> !t.isDeleted() && t.getAssignee().getUser().getId()==userId)
+                .toList();
+
+        int totalTasks = tasks.size();
+        int completedTasks = (int) tasks.stream().filter(t -> t.getStatus() == TaskStatus.COMPLETED).count();
+
+        double completionRate = totalTasks > 0 ? (double) completedTasks / totalTasks * 100 : 0;
+
+        UserTaskCompletionRateAnalysis analysis = new UserTaskCompletionRateAnalysis(completionRate);
+        return ApiResponse.success("User task completion rate analysis retrieved successfully", analysis);
+    }
+    public ApiResponse<TaskStatusChangeAnalysis> getTaskStatusChangeAnalysis(Long userId, Date startDate, Date endDate) {
+        List<Task> tasks = taskRepository.findAll().stream()
+                .filter(t -> t.isDeleted() == false
+                        && t.getAssignee().getUser().getId() == userId
+                        && t.getCreateTime().after(startDate)
+                        && t.getCreateTime().before(endDate)
+                ).toList();
+
+        int newTasks = 0;
+        int inProgressTasks = 0;
+        int completedTasks = 0;
+
+        for (Task task : tasks) {
+            if (task.getStatus().name().equals("TO_DO")) {
+                newTasks++;
+            } else if (task.getStatus().name().equals("IN_PROGRESS")) {
+                inProgressTasks++;
+            } else if (task.getStatus().name().equals("COMPLETED")) {
+                completedTasks++;
+            }
         }
+
+        TaskStatusChangeAnalysis analysis = new TaskStatusChangeAnalysis(newTasks, inProgressTasks, completedTasks);
+        return ApiResponse.success("Task status change analysis retrieved successfully", analysis);
     }
 
-    public ApiResponse<List<PermissionResponse>> getPermission(Long id) {
-        try {
-            List<PermissionUser> permissionUser = permissionUserRepository.findByUser_Id(id).orElseThrow(() -> new EntityNotFoundException("Permissions not found for user with ID: " + id));
+    public ApiResponse<TaskStatusAnalysis> getTaskStatusAnalysis(Long userId) {
+        List<Task> tasks = taskRepository.findAll().stream().filter(t-> t.isDeleted()==false && t.getAssignee().getUser().getId()==userId).toList();
 
-            List<PermissionResponse> responseList = new ArrayList<>();
-            for (PermissionUser permissionUser1 : permissionUser) {
-                PermissionResponse permissionResponse = new PermissionResponse();
-                permissionResponse.setSurname(permissionUser1.getUser().getSurname());
-                permissionResponse.setUserName(permissionUser1.getUser().getName());
-                permissionResponse.setUserId(permissionUser1.getUser().getId());
-                permissionResponse.setStartDateOfPermission(permissionUser1.getStartDateOfPermission());
-                permissionResponse.setDayCount(permissionUser1.getDayCount());
-                permissionResponse.setAccepted(permissionUser1.getAccepted());
-                permissionResponse.setPermissionId(permissionUser1.getId());
-                responseList.add(permissionResponse);
+        int toDo = 0;
+        int inProgress = 0;
+        int completed = 0;
+
+        for (Task task : tasks) {
+            switch (task.getStatus().name()) {
+                case "TO_DO":
+                    toDo++;
+                    break;
+                case "IN_PROGRESS":
+                    inProgress++;
+                    break;
+                case "COMPLETED":
+                    completed++;
+                    break;
+            }
+        }
+
+        TaskStatusAnalysis analysis = new TaskStatusAnalysis(toDo, inProgress, completed);
+        return  ApiResponse.success("Task status analysis retrieved successfully", analysis);
+    }
+
+    private List<CommentResponse>convertToCommentResponse(Task task)
+    {
+        List<CommentResponse> commentResponseList = new ArrayList<>();
+
+        if(task.getComments().isEmpty())
+        {
+            return  commentResponseList;
+        }
+
+            task.getComments().forEach(comment -> {
+                CommentResponse commentResponse = new CommentResponse();
+                commentResponse.setName(comment.getUser().getName());
+                commentResponse.setSurname(comment.getUser().getSurname());
+                commentResponse.setContent(comment.getContent());
+                commentResponse.setCommentTime(comment.getCreatedAt());
+                commentResponseList.add(commentResponse);
+            });
+
+        return commentResponseList;
+
+    }
+
+    public ApiResponse<List<TaskInfoResponse>> getTasksByStatus(Long userId, String status) {
+        try {
+            TaskStatus taskStatus;
+            try {
+                taskStatus = TaskStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                return ApiResponse.error("Invalid task status: " + status);
             }
 
-            return ApiResponse.success("Get Permission Success", responseList);
-        } catch (EntityNotFoundException ex) {
-            return ApiResponse.error("Permissions not found: " + ex.getMessage());
+            List<TaskInfoResponse> responseList = new ArrayList<>();
+            List<Task> taskList = taskRepository.findAll().stream().filter(task -> task.getStatus().name().equals(status) && task.getAssignee().getId() == userId).toList();
+
+            for (Task task : taskList) {
+
+                List<CommentResponse>commentResponseList=convertToCommentResponse(task);
+
+                TaskInfoResponse response = new TaskInfoResponse(
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getStatus().name(),
+                        task.getPriority().name(),
+                        task.getDeadLine(),
+                        task.getCreateTime(),
+                        task.getAssignee().getId(),
+                        task.getAssignee().getUser().getName(),
+                        task.getAssignee().getUser().getSurname(),
+                        task.getAssigner().getId(),
+                        task.getAssigner().getUser().getName(),
+                        task.getAssigner().getUser().getSurname(),
+                        commentResponseList
+
+                );
+                responseList.add(response);
+            }
+
+
+            return ApiResponse.success("Get Tasks By Status Success", responseList);
         } catch (Exception ex) {
-            return ApiResponse.error("Error while fetching permissions: " + ex.getMessage());
+            return ApiResponse.error("Error while fetching tasks by status: " + ex.getMessage());
         }
     }
+
 
     public ApiResponse<Void> createTask(CreateTaskRequest createTaskRequest) {
         try {
             User assignee = userRepository.findById(createTaskRequest.getAssigneeId()).orElseThrow(() -> new EntityNotFoundException("Assignee not found"));
             User assigneer = userRepository.findById(createTaskRequest.getAssigneerId()).orElseThrow(() -> new EntityNotFoundException("Assigner not found"));
+
+            if (!assignee.getRoles().stream().anyMatch(r -> r.getName() == ERole.SOFTWARE) || !assigneer.getRoles().stream().anyMatch(r -> r.getName() == ERole.SOFTWARE)) {
+                return ApiResponse.error("Users is not Software User");
+            }
+
 
             TaskStatus taskStatus = TaskStatus.valueOf(createTaskRequest.getStatus());
             TaskPriority taskPriority = TaskPriority.valueOf(createTaskRequest.getPriority());
@@ -156,9 +251,14 @@ public class TaskService {
                     .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
 
             User assignee = userRepository.findById(request.getAssigneeId())
-                    .orElseThrow(() -> new EntityNotFoundException("Assignee not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("Assignee Software User not found"));
             User assigner = userRepository.findById(request.getAssigneerId())
-                    .orElseThrow(() -> new EntityNotFoundException("Assigner not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("Assigner Software User  not found"));
+
+            if (!assignee.getRoles().stream().anyMatch(r -> r.getName() == ERole.SOFTWARE) || !assigner.getRoles().stream().anyMatch(r -> r.getName() == ERole.SOFTWARE)) {
+                return ApiResponse.error("Users is not Software User");
+            }
+
 
             TaskStatus taskStatus = TaskStatus.valueOf(request.getStatus());
             TaskPriority taskPriority = TaskPriority.valueOf(request.getPriority());
@@ -180,31 +280,43 @@ public class TaskService {
         }
     }
 
-    public ApiResponse<List<TaskInfoResponse>> getTaskInfoListBySoftwareUserId(Long id) {
+    public ApiResponse<Page<TaskInfoResponse>> getTaskInfoListBySoftwareUserId(Long id, Pageable pageable) {
         try {
-            SoftwareUser softwareUser = softwareUserRepository.findSoftwareUserByUserId(id)
+            SoftwareUser softwareUser = softwareUserRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("Software User not found with ID: " + id));
 
-            List<TaskInfoResponse> taskInfoResponseList = new ArrayList<>();
-            for (Task task : softwareUser.getTasksAssigned().stream().filter(task -> !task.isDeleted()).toList()) {
-                taskInfoResponseList.add(
-                        new TaskInfoResponse(
+            Page<Task> taskPage = taskRepository.findByAssigneeIdAndDeletedFalse(id, pageable);
+
+            List<TaskInfoResponse> taskInfoResponseList = taskPage.getContent().stream()
+                    .map(task -> {
+                        SoftwareUser assigner = null;
+                        if (task.getAssigner() != null) {
+                            assigner = softwareUserRepository.findById(task.getAssigner().getId())
+                                    .orElseThrow(() -> new EntityNotFoundException("Software User not found with ID: " + id));
+                        }
+
+                        return new TaskInfoResponse(
                                 task.getTitle(),
                                 task.getDescription(),
                                 task.getStatus().name(),
                                 task.getPriority().name(),
                                 task.getDeadLine(),
                                 task.getCreateTime(),
-                                softwareUser.getUser().getId(),
+                                assigner != null ? assigner.getId() : null,  // Assigner's ID might be null
+                                assigner != null ? assigner.getUser().getName() : null,  // Handle null assigner
+                                assigner != null ? assigner.getUser().getSurname() : null,  // Handle null assigner
+                                softwareUser.getId(),
                                 softwareUser.getUser().getName(),
                                 softwareUser.getUser().getSurname(),
-                                softwareUser.getUser().getId(),
-                                softwareUser.getUser().getName(),
-                                softwareUser.getUser().getSurname()
-                        )
-                );
-            }
-            return ApiResponse.success("Get Task By Software User ID Success", taskInfoResponseList);
+                                convertToCommentResponse(task)
+                        );
+                    })
+                    .collect(Collectors.toList());
+
+            // PageResponse oluşturun
+            Page<TaskInfoResponse> taskInfoPage = new PageImpl<>(taskInfoResponseList, pageable, taskPage.getTotalElements());
+
+            return ApiResponse.success("Get Task By Software User ID Success", taskInfoPage);
         } catch (EntityNotFoundException ex) {
             return ApiResponse.error("Software User not found: " + ex.getMessage());
         } catch (Exception ex) {
@@ -212,13 +324,14 @@ public class TaskService {
         }
     }
 
+
     public ApiResponse<TaskInfoResponse> getTaskInfo(Long taskId) {
         try {
             Task task = taskRepository.findByIdAndDeletedFalse(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
 
-            User assignee = userRepository.findById(task.getAssignee().getId()).get();
-            User assigner = userRepository.findById(task.getAssigner().getId()).get();
+            SoftwareUser assignee = softwareUserRepository.findById(task.getAssignee().getId()).get();
+            SoftwareUser assigner = softwareUserRepository.findById(task.getAssigner().getId()).get();
 
             return ApiResponse.success("Get Task Info Success", new TaskInfoResponse(
                     task.getTitle(),
@@ -228,11 +341,12 @@ public class TaskService {
                     task.getDeadLine(),
                     task.getCreateTime(),
                     assigner.getId(),
-                    assigner.getName(),
-                    assigner.getSurname(),
+                    assigner.getUser().getName(),
+                    assigner.getUser().getSurname(),
                     assignee.getId(),
-                    assignee.getName(),
-                    assignee.getSurname()
+                    assignee.getUser().getName(),
+                    assignee.getUser().getSurname(),
+                    convertToCommentResponse(task)
             ));
         } catch (EntityNotFoundException ex) {
             return ApiResponse.error("Task not found: " + ex.getMessage());
@@ -240,4 +354,4 @@ public class TaskService {
             return ApiResponse.error("Error while fetching task info: " + ex.getMessage());
         }
     }
-}
+    }

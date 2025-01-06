@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Log4j2
-public class   JwtUtils {
+public class JwtUtils {
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -21,42 +21,39 @@ public class   JwtUtils {
 
     @Value("${jwt.expiration}")
     private int jwtExpirationMs;
- ;
+    ;
+
     public String generateJwtToken(Authentication authentication, Set<Role> roles) {
 
-            Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
-            String username = loggedInUser.getName();
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String username = loggedInUser.getName();
 
-            List<String> roleNames = roles.stream()
-                    .map(role -> role.getName().toString())
-                    .collect(Collectors.toList());
+        List<String> roleNames = roles.stream()
+                .map(role -> role.getName().toString())
+                .collect(Collectors.toList());
 
-            Map<String, Object> rolesClaim = new HashMap<>();
-            rolesClaim.put("roles", roleNames);
+        Map<String, Object> rolesClaim = new HashMap<>();
+        rolesClaim.put("roles", roleNames);
 
-            String token = Jwts.builder()
-                    .setSubject(username)
-                    .setIssuedAt(new Date())
-                    .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
-                    .addClaims(rolesClaim)
-                    .signWith(SignatureAlgorithm.HS256, jwtSecret)
-                    .compact();
+        String token = Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
+                .addClaims(rolesClaim)
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .compact();
 
-            return token;
-        }
-
-
-
-
-    public String getUserNameFromJwtToken(String token) {
-        Claims claims= Jwts.parser().setSigningKey(jwtSecret)
-                .parseClaimsJws(token).getBody();
-
-        return  claims.getSubject();
-
+        return token;
     }
 
 
+    public String getUserNameFromJwtToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret)
+                .parseClaimsJws(token).getBody();
+
+        return claims.getSubject();
+
+    }
 
     public boolean validateJwtToken(String authToken) {
         try {

@@ -18,11 +18,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("api/auth")
 @Log4j2
 public class AuthController {
+
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -43,49 +43,41 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthentacitionResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
-
-        log.info("AuthController :login method entered with request {}", loginRequest.getUsername());
-        return ResponseEntity.ok(authService.login(loginRequest));
-
+        log.info("AuthController: login request received for username: {}", loginRequest.getUsername());
+        ResponseEntity<AuthentacitionResponse> response = ResponseEntity.ok(authService.login(loginRequest));
+        log.info("AuthController: login response generated for username: {}", loginRequest.getUsername());
+        return response;
     }
 
-
-
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody SignupRequest signUpRequest) throws Exception {
-
-        log.info("AuthController : register method entered with request {}", signUpRequest.toString());
-
+    public ResponseEntity<String> register(@RequestBody SignupRequest signUpRequest) throws Exception {
+        log.info("AuthController: register request received for email: {}", signUpRequest.getEmail());
         authService.registerUser(signUpRequest);
-        return ResponseEntity.ok("Register success");
+        log.info("AuthController: user registered successfully for username: {}", signUpRequest.getUsername());
+        return ResponseEntity.ok("Register Success");
     }
 
     @GetMapping("/validate/{token}")
-    public ResponseEntity<String> validate(@PathVariable("token")String token) throws Exception {
-        log.info("AuthController : validate method entered ");
-
-    boolean isValidate=authService.validate(token);
-        log.info("AuthController : validate method completed successfuly ");
-
-        return ResponseEntity.ok(isValidate ?"Is valid":"Not valid token");
+    public ResponseEntity<String> validate(@PathVariable("token") String token) throws Exception {
+        log.info("AuthController: validate request received for token.");
+        boolean isValidate = authService.validate(token);
+        log.info("AuthController: token validation result: {}", isValidate ? "Valid" : "Invalid");
+        return ResponseEntity.ok(isValidate ? "Is valid" : "Not valid token");
     }
 
     @GetMapping("get-user-info")
-    public ResponseEntity<UserInfo>getUserInfo(@RequestHeader("Authorization")String token) throws Exception
-    {
-
-       return new ResponseEntity<>( authService.getUserInfo(token),HttpStatus.OK);
-
-
+    public ResponseEntity<UserInfo> getUserInfo(@RequestHeader("Authorization") String token) throws Exception {
+        log.info("AuthController: getUserInfo request received.");
+        UserInfo userInfo = authService.getUserInfo(token);
+        log.info("AuthController: user info retrieved successfully for token.");
+        return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
     @GetMapping("get-current-user")
-    public ResponseEntity<UserInfo>getCurrentInfo()
-    {
-
-        return  new ResponseEntity<>(authService.getCurrentUser(),HttpStatus.OK);
-
+    public ResponseEntity<UserInfo> getCurrentInfo() {
+        log.info("AuthController: getCurrentInfo request received.");
+        UserInfo userInfo = authService.getCurrentUser();
+        log.info("AuthController: current user info retrieved successfully.");
+        return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
-
-
 }

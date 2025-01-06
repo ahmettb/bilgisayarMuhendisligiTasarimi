@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,10 +26,13 @@ public class Task extends BaseEntity {
     private Date createTime;
     private Date deadLine;
 
-    // Assignee ve Assigner ile SoftwareUser ilişkilendirildi
     @ManyToOne
     @JoinColumn(name = "assignee_id", nullable = false)
     private SoftwareUser assignee;
+
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "assigner_id", nullable = false)

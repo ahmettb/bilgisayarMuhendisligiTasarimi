@@ -17,29 +17,55 @@ spring:
           filters:
             - name: AuthFilter
 
-        - id: marketing-service
+        - id: hr-user
+          uri: http://localhost:8001
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - name: AuthFilter
+        - id: hr-permission
+          uri: http://localhost:8001
+          predicates:
+            - Path=/api/hr/permission/**
+          filters:
+            - name: AuthFilter
+
+        - id: marketing-campaign
           uri: http://localhost:8002
           predicates:
             - Path=/api/campaign/**
           filters:
             - name: AuthFilter
-
-        - id: software-service
+        - id: marketing-permission
+          uri: http://localhost:8002
+          predicates:
+            - Path=/api/marketing/permission/**
+          filters:
+            - name: AuthFilter
+        - id: software-task
           uri: http://localhost:8003
           predicates:
             - Path=/api/task/**
           filters:
             - name: AuthFilter
-
+        - id: task-comment
+          uri: http://localhost:8003
+          predicates:
+            - Path=/api/comment/**
+          filters:
+            - name: AuthFilter
+        - id: software-permission
+          uri: http://localhost:8003
+          predicates:
+            - Path=/api/software/permission/**
+          filters:
+            - name: AuthFilter
         - id: authentication
           uri: http://localhost:9100
           predicates:
             - Path=/api/auth/**
           filters:
             - name: AuthFilter
-
-
-
 eureka:
   instance:
     hostname: gateway
@@ -49,9 +75,6 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:9000/eureka
-
-
-
 management:
   endpoints:
     web:

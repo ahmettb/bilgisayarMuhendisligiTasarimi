@@ -10,7 +10,6 @@ import java.util.Date;
 @Setter
 public class UpdateCampaignRequest {
 
-    private long id;
 
     private String name;
 

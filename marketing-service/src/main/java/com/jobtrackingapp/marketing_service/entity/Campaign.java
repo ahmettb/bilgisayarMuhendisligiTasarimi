@@ -33,7 +33,7 @@ public class Campaign extends BaseEntity {
     private int targetReach;
 
     @ManyToOne
-    @JoinColumn(name = "marketing_user_id", nullable = false)
-    private MarketingUser user;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 }

@@ -20,7 +20,4 @@ public interface UserService {
     ApiResponse<Void> deleteUser(Long id);
     ApiResponse<UserResponse> getUserById(Long id);
     ApiResponse<List<UserDTO>> getUsersByRole(ERole roletype);
-    ApiResponse<Void> acceptPermission(Long id);
-    ApiResponse<List<PermissionResponse>> getPermissionByUserId(Long id);
-    ApiResponse<Void> createPermission(CreatePermissionRequest request);
 }
