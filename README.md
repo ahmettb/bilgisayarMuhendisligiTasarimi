@@ -1,56 +1,21 @@
 # Job Tracking Application - İş Takip Uygulaması
 
-🚀 **Kurumsal İş Süreçlerini Dijitalleştiren Mikroservis Tabanlı Çözüm**
+ **Kurumsal İş Süreçlerini Dijitalleştiren Mikroservis Tabanlı Çözüm**
 
 Modern mikroservis mimarisi ve Spring Cloud teknolojileri kullanılarak geliştirilmiş, kurumsal düzeyde iş takip ve yönetim uygulaması. Farklı departmanların (İnsan Kaynakları, Pazarlama, Yazılım, Yönetim) iş süreçlerini merkezi bir platform üzerinden yönetmek, analiz etmek ve optimize etmek için tasarlanmıştır.
 
-## 🏗️ Sistem Mimarisi
+
+##  Sistem Mimarisi
 
 Bu uygulama **Mikroservis Mimarisi** kullanılarak geliştirilmiştir:
 
 ![Sistem Mimarisi](blok.png)
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Client Apps   │    │   Mobile Apps   │    │   Web Apps      │
-└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
-          │                      │                      │
-          └──────────────────────┼──────────────────────┘
-                                 │
-                    ┌─────────────▼─────────────┐
-                    │     API Gateway           │
-                    │     (Port: 8500)          │
-                    └─────────────┬─────────────┘
-                                  │
-                    ┌─────────────▼─────────────┐
-                    │    Discovery Service      │
-                    │    (Port: 9000)           │
-                    └─────────────┬─────────────┘
-                                  │
-          ┌───────────────────────┼───────────────────────┐
-          │                       │                       │
-┌─────────▼─────────┐  ┌─────────▼─────────┐  ┌─────────▼─────────┐
-│ Authentication     │  │ Admin Service     │  │ HR Service        │
-│ Service            │  │ (Port: 8000)      │  │ (Port: 8001)      │
-│ (Port: 9100)       │  │                   │  │                   │
-└────────────────────┘  └────────────────────┘  └────────────────────
-          │                       │                       │
-          └───────────────────────┼───────────────────────┘
-                                  │
-          ┌───────────────────────┼───────────────────────┐
-          │                       │                       │
-┌─────────▼─────────┐  ┌─────────▼─────────┐  ┌─────────▼─────────┐
-│ Marketing Service  │  │ Software Service  │  │ PostgreSQL DB     │
-│ (Port: 8002)       │  │ (Port: 8003)      │  │ (Port: 5432)      │
-│ + Redis Cache      │  │                   │  │                   │
-└────────────────────┘  └────────────────────┘  └────────────────────
-```
 
 ### 🔧 Kullanılan Teknolojiler
 
-- **Backend**: Java 17, Spring Boot 3.x, Spring Cloud 2023.0.0
+- **Backend**: Java, Spring Boot, Spring Cloud
 - **Veritabanı**: PostgreSQL
-- **Cache**: Redis (Marketing Service için)
 - **Service Discovery**: Netflix Eureka
 - **API Gateway**: Spring Cloud Gateway
 - **Güvenlik**: Spring Security, JWT
@@ -59,7 +24,7 @@ Bu uygulama **Mikroservis Mimarisi** kullanılarak geliştirilmiştir:
 - **Logging**: Log4j2
 - **Documentation**: Swagger/OpenAPI
 
-## 📁 Mikroservis Detayları
+##  Mikroservis Detayları
 
 ### 1. **Discovery Service** (Port: 9000)
 - **Teknoloji**: Netflix Eureka Server
@@ -68,16 +33,14 @@ Bu uygulama **Mikroservis Mimarisi** kullanılarak geliştirilmiştir:
   - Servis keşfi ve kayıt
   - Servis durumu izleme
   - Eureka Dashboard
-
 ### 2. **API Gateway** (Port: 8500)
 - **Teknoloji**: Spring Cloud Gateway
 - **Görev**: Tüm isteklerin giriş noktası
 - **Özellikler**:
   - JWT token doğrulama (AuthFilter)
-  - Route yönetimi ve yönlendirme
+  - Route yönetimi
   - Load balancing
   - CORS yönetimi
-  - Health monitoring
 
 ### 3. **Authentication Service** (Port: 9100)
 - **Teknoloji**: Spring Security, JWT
@@ -111,9 +74,7 @@ Bu uygulama **Mikroservis Mimarisi** kullanılarak geliştirilmiştir:
 
 ### 6. **Marketing Service** (Port: 8002)
 - **Görev**: Pazarlama kampanyaları yönetimi
-- **Özellikler**: 
-  - Redis cache entegrasyonu
-  - Kampanya durumu otomatik güncelleme
+- **Özellikler**: Redis cache entegrasyonu
 - **Endpoint'ler**:
   - `POST /api/campaign/save` - Kampanya oluşturma
   - `GET /api/campaign/get/{id}` - Kampanya bilgisi
@@ -138,20 +99,19 @@ Bu uygulama **Mikroservis Mimarisi** kullanılarak geliştirilmiştir:
   - `GET /api/task/get-task-status-analysis/{id}` - Durum analizi
   - `POST /api/comment/save` - Yorum ekleme
 
-## 🔐 Kullanıcı Rolleri
+##  Kullanıcı Rolleri
 
 - **ADMIN**: Sistem yöneticisi (tüm yetkiler)
 - **HUMAN_RESOURCE**: İnsan Kaynakları personeli
 - **MARKETING**: Pazarlama personeli
 - **SOFTWARE**: Yazılım geliştirici
 
-## 🚀 Kurulum ve Çalıştırma
+##  Kurulum ve Çalıştırma
 
 ### Gereksinimler
 - Java 17+
 - Maven 3.6+
 - PostgreSQL 12+
-- Redis (Marketing Service için)
 - Git
 
 ### Veritabanı Kurulumu
@@ -179,7 +139,7 @@ cd api-gateway
 mvn spring-boot:run
 ```
 
-4. **Diğer servisler** (sıra önemli değil):
+4. **Diğer servisler**:
 ```bash
 # Admin Service
 cd admin-service && mvn spring-boot:run
@@ -194,40 +154,27 @@ cd marketing-service && mvn spring-boot:run
 cd software-service && mvn spring-boot:run
 ```
 
-## 📊 Monitoring ve Dashboard
+##  Monitoring ve Dashboard
 
 - **Eureka Dashboard**: http://localhost:9000
 - **Gateway Health**: http://localhost:8500/actuator/health
 - **Service Health**: Her servis için `/actuator/health`
 
-## 🔧 Konfigürasyon
+##  Konfigürasyon
 
 Her servisin `application.yml` dosyasında:
 - Veritabanı bağlantısı (PostgreSQL)
 - Eureka server adresi
 - Port numaraları
 - JWT secret key
-- Redis konfigürasyonu (Marketing Service)
 
-## 🛠️ Geliştirme Özellikleri
 
-- **Logging**: Log4j2 ile detaylı loglama
-- **Exception Handling**: Merkezi hata yönetimi
-- **Validation**: Bean validation
-- **Documentation**: Swagger/OpenAPI (tüm servislerde)
-- **Testing**: Unit ve integration testler
-- **Security**: JWT tabanlı güvenlik
-- **Monitoring**: Spring Boot Actuator health checks
-
-## 📈 Özellikler
+##  Özellikler
 
 - **Kullanıcı Yönetimi**: CRUD işlemleri, rol tabanlı erişim
 - **Görev Takibi**: Durum yönetimi, atama, analiz
 - **Kampanya Yönetimi**: Oluşturma, güncelleme, durum takibi
 - **İzin Sistemi**: Talep, onay/red süreçleri
 - **Analitik**: Görev tamamlanma oranları, durum analizleri
-- **Cache**: Redis ile performans optimizasyonu
 
 ---
-
-**Not**: Bu proje eğitim amaçlı geliştirilmiştir ve production ortamında kullanmadan önce güvenlik, performans ve ölçeklenebilirlik açısından gözden geçirilmelidir. 
