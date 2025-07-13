@@ -1,127 +1,126 @@
-# Job Tracking Application - İş Takip Uygulaması
+# Job Tracking Application
 
- **Kurumsal İş Süreçlerini Dijitalleştiren Mikroservis Tabanlı Çözüm**
+**Enterprise Business Process Digitalization with Microservices-Based Solution**
 
-Modern mikroservis mimarisi ve Spring Cloud teknolojileri kullanılarak geliştirilmiş, kurumsal düzeyde iş takip ve yönetim uygulaması. Farklı departmanların (İnsan Kaynakları, Pazarlama, Yazılım, Yönetim) iş süreçlerini merkezi bir platform üzerinden yönetmek, analiz etmek ve optimize etmek için tasarlanmıştır.
+A comprehensive job tracking and management application developed using modern microservices architecture and Spring Cloud technologies. Designed to manage, analyze, and optimize business processes of different departments (Human Resources, Marketing, Software, Management) through a centralized platform.
 
+## System Architecture
 
-##  Sistem Mimarisi
+This application is developed using **Microservices Architecture**:
 
-Bu uygulama **Mikroservis Mimarisi** kullanılarak geliştirilmiştir:
+![System Architecture](blok.png)
 
-![Sistem Mimarisi](blok.png)
-
-
-### 🔧 Kullanılan Teknolojiler
+### 🔧 Technologies Used
 
 - **Backend**: Java, Spring Boot, Spring Cloud
-- **Veritabanı**: PostgreSQL
+- **Database**: PostgreSQL
 - **Service Discovery**: Netflix Eureka
 - **API Gateway**: Spring Cloud Gateway
-- **Güvenlik**: Spring Security, JWT
+- **Security**: Spring Security, JWT
 - **ORM**: Spring Data JPA, Hibernate
 - **Build Tool**: Maven
 - **Logging**: Log4j2
 - **Documentation**: Swagger/OpenAPI
 
-##  Mikroservis Detayları
+## Microservices Details
 
 ### 1. **Discovery Service** (Port: 9000)
-- **Teknoloji**: Netflix Eureka Server
-- **Görev**: Tüm mikroservislerin kayıt merkezi
-- **Özellikler**: 
-  - Servis keşfi ve kayıt
-  - Servis durumu izleme
+- **Technology**: Netflix Eureka Server
+- **Purpose**: Registration center for all microservices
+- **Features**: 
+  - Service discovery and registration
+  - Service status monitoring
   - Eureka Dashboard
+
 ### 2. **API Gateway** (Port: 8500)
-- **Teknoloji**: Spring Cloud Gateway
-- **Görev**: Tüm isteklerin giriş noktası
-- **Özellikler**:
-  - JWT token doğrulama (AuthFilter)
-  - Route yönetimi
+- **Technology**: Spring Cloud Gateway
+- **Purpose**: Entry point for all requests
+- **Features**:
+  - JWT token authentication (AuthFilter)
+  - Route management
   - Load balancing
-  - CORS yönetimi
+  - CORS management
 
 ### 3. **Authentication Service** (Port: 9100)
-- **Teknoloji**: Spring Security, JWT
-- **Görev**: Kimlik doğrulama ve yetkilendirme
-- **Endpoint'ler**:
-  - `POST /api/auth/login` - Giriş yapma
-  - `POST /api/auth/register` - Kayıt olma
-  - `GET /api/auth/validate/{token}` - Token doğrulama
-  - `GET /api/auth/get-user-info` - Kullanıcı bilgileri
-  - `GET /api/auth/get-current-user` - Mevcut kullanıcı
+- **Technology**: Spring Security, JWT
+- **Purpose**: Authentication and authorization
+- **Endpoints**:
+  - `POST /api/auth/login` - Login
+  - `POST /api/auth/register` - Registration
+  - `GET /api/auth/validate/{token}` - Token validation
+  - `GET /api/auth/get-user-info` - User information
+  - `GET /api/auth/get-current-user` - Current user
 
 ### 4. **Admin Service** (Port: 8000)
-- **Görev**: Merkezi yönetim ve koordinasyon
-- **Özellikler**:
-  - Diğer servislerle iletişim (RestTemplate Client)
-  - Kullanıcı yönetimi
-  - İzin onaylama/reddetme
-  - Kampanya yönetimi
-  - Görev analizi ve raporlama
+- **Purpose**: Central management and coordination
+- **Features**:
+  - Communication with other services (RestTemplate Client)
+  - User management
+  - Permission approval/rejection
+  - Campaign management
+  - Task analysis and reporting
 
 ### 5. **HR Service** (Port: 8001)
-- **Görev**: İnsan Kaynakları süreçleri
-- **Endpoint'ler**:
-  - `POST /api/user/save` - Kullanıcı ekleme
-  - `PUT /api/user/update/{id}` - Kullanıcı güncelleme
-  - `DELETE /api/user/delete/{id}` - Kullanıcı silme
-  - `GET /api/user/get/{id}` - Kullanıcı bilgisi
-  - `GET /api/user/role/{role}` - Role göre kullanıcılar
-  - `POST /api/hr/permission/save` - İzin talebi
-  - `GET /api/hr/permission/get/{id}` - İzin bilgisi
+- **Purpose**: Human Resources processes
+- **Endpoints**:
+  - `POST /api/user/save` - Add user
+  - `PUT /api/user/update/{id}` - Update user
+  - `DELETE /api/user/delete/{id}` - Delete user
+  - `GET /api/user/get/{id}` - Get user information
+  - `GET /api/user/role/{role}` - Get users by role
+  - `POST /api/hr/permission/save` - Permission request
+  - `GET /api/hr/permission/get/{id}` - Get permission information
 
 ### 6. **Marketing Service** (Port: 8002)
-- **Görev**: Pazarlama kampanyaları yönetimi
-- **Özellikler**: Redis cache entegrasyonu
-- **Endpoint'ler**:
-  - `POST /api/campaign/save` - Kampanya oluşturma
-  - `GET /api/campaign/get/{id}` - Kampanya bilgisi
-  - `GET /api/campaign/get-all` - Tüm kampanyalar
-  - `PUT /api/campaign/update/{id}` - Kampanya güncelleme
-  - `PUT /api/campaign/update-status` - Durum güncelleme
-  - `DELETE /api/campaign/delete/{id}` - Kampanya silme
+- **Purpose**: Marketing campaign management
+- **Features**: Redis cache integration
+- **Endpoints**:
+  - `POST /api/campaign/save` - Create campaign
+  - `GET /api/campaign/get/{id}` - Get campaign information
+  - `GET /api/campaign/get-all` - Get all campaigns
+  - `PUT /api/campaign/update/{id}` - Update campaign
+  - `PUT /api/campaign/update-status` - Update status
+  - `DELETE /api/campaign/delete/{id}` - Delete campaign
 
 ### 7. **Software Service** (Port: 8003)
-- **Görev**: Yazılım projeleri ve görev yönetimi
-- **Özellikler**:
-  - Görev durumu takibi
-  - Performans analizi ve raporlama
-  - Yorum sistemi
-- **Endpoint'ler**:
-  - `POST /api/task/create` - Görev oluşturma
-  - `PUT /api/task/update-status` - Görev durumu güncelleme
-  - `GET /api/task/get/{id}` - Görev bilgisi
-  - `GET /api/task/get-task-by-status` - Duruma göre görevler
-  - `GET /api/task/get-task-by-assignee/{id}` - Atanan görevler
-  - `GET /api/task/get-task-completion-rate/{userId}` - Tamamlanma oranı
-  - `GET /api/task/get-task-status-analysis/{id}` - Durum analizi
-  - `POST /api/comment/save` - Yorum ekleme
+- **Purpose**: Software projects and task management
+- **Features**:
+  - Task status tracking
+  - Performance analysis and reporting
+  - Comment system
+- **Endpoints**:
+  - `POST /api/task/create` - Create task
+  - `PUT /api/task/update-status` - Update task status
+  - `GET /api/task/get/{id}` - Get task information
+  - `GET /api/task/get-task-by-status` - Get tasks by status
+  - `GET /api/task/get-task-by-assignee/{id}` - Get assigned tasks
+  - `GET /api/task/get-task-completion-rate/{userId}` - Get completion rate
+  - `GET /api/task/get-task-status-analysis/{id}` - Get status analysis
+  - `POST /api/comment/save` - Add comment
 
-##  Kullanıcı Rolleri
+## User Roles
 
-- **ADMIN**: Sistem yöneticisi (tüm yetkiler)
-- **HUMAN_RESOURCE**: İnsan Kaynakları personeli
-- **MARKETING**: Pazarlama personeli
-- **SOFTWARE**: Yazılım geliştirici
+- **ADMIN**: System administrator (all permissions)
+- **HUMAN_RESOURCE**: Human Resources personnel
+- **MARKETING**: Marketing personnel
+- **SOFTWARE**: Software developer
 
-##  Kurulum ve Çalıştırma
+## Installation and Setup
 
-### Gereksinimler
+### Requirements
 - Java 17+
 - Maven 3.6+
 - PostgreSQL 12+
 - Git
 
-### Veritabanı Kurulumu
+### Database Setup
 ```sql
 CREATE DATABASE job_tracking_db;
 ```
 
-### Servisleri Çalıştırma Sırası
+### Service Startup Order
 
-1. **Discovery Service** (Önce çalıştırılmalı):
+1. **Discovery Service** (Must be started first):
 ```bash
 cd discovery
 mvn spring-boot:run
@@ -139,7 +138,7 @@ cd api-gateway
 mvn spring-boot:run
 ```
 
-4. **Diğer servisler**:
+4. **Other services**:
 ```bash
 # Admin Service
 cd admin-service && mvn spring-boot:run
@@ -154,27 +153,28 @@ cd marketing-service && mvn spring-boot:run
 cd software-service && mvn spring-boot:run
 ```
 
-##  Monitoring ve Dashboard
+## Monitoring and Dashboard
 
 - **Eureka Dashboard**: http://localhost:9000
 - **Gateway Health**: http://localhost:8500/actuator/health
-- **Service Health**: Her servis için `/actuator/health`
+- **Service Health**: `/actuator/health` for each service
 
-##  Konfigürasyon
+## Configuration
 
-Her servisin `application.yml` dosyasında:
-- Veritabanı bağlantısı (PostgreSQL)
-- Eureka server adresi
-- Port numaraları
+In each service's `application.yml` file:
+- Database connection (PostgreSQL)
+- Eureka server address
+- Port numbers
 - JWT secret key
 
+## Features
 
-##  Özellikler
-
-- **Kullanıcı Yönetimi**: CRUD işlemleri, rol tabanlı erişim
-- **Görev Takibi**: Durum yönetimi, atama, analiz
-- **Kampanya Yönetimi**: Oluşturma, güncelleme, durum takibi
-- **İzin Sistemi**: Talep, onay/red süreçleri
-- **Analitik**: Görev tamamlanma oranları, durum analizleri
+- **User Management**: CRUD operations, role-based access
+- **Task Tracking**: Status management, assignment, analysis
+- **Campaign Management**: Creation, update, status tracking
+- **Permission System**: Request, approval/rejection processes
+- **Analytics**: Task completion rates, status analysis
 
 ---
+
+**Note**: This project is developed for educational purposes and should be reviewed for security, performance, and scalability before use in production environments.
